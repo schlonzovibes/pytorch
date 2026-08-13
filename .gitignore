@@ -1,0 +1,8 @@
+# Nur notebooks/ und scripts/ versionieren
+/*
+!.gitignore
+!notebooks/
+!scripts/
+
+# In notebooks nur die Root-Dateien, keine Unterordner
+notebooks/*/
