@@ -7,6 +7,7 @@ print("Printing Training Data Infos")
 print(train_data)
 print(len(train_data))
 # Access the raw data  NumPy Array
+# Not global rule, just CIFAR10 holds its data inside numpy arrays
 print(train_data.data.shape)
 print(train_data.classes)
 print(train_data.class_to_idx)
@@ -65,11 +66,11 @@ train_transforms = transforms.Compose(
     ]
 )
 
-train_data.transforms = train_transforms
+train_data.transform = train_transforms
 
 # Compose and apply transforms for test data
 test_transforms = transforms.Compose([transforms.ToTensor(), normalize])
-test_data.transforms = test_transforms
+test_data.transform = test_transforms
 
 import torch
 

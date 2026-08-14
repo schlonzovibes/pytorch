@@ -6,3 +6,6 @@
 
 # In notebooks nur die Root-Dateien, keine Unterordner
 notebooks/*/
+
+# Python-Bytecode-Cache
+__pycache__/
