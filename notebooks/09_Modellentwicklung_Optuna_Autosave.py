@@ -162,9 +162,9 @@ def objective(trial):
     # using this trial's suggested hyperparameters
     model = LeNet5Lightning(lr=lr, momentum=momentum)
     trainer = pl.Trainer(
-        max_epochs=5,
+        max_epochs=25,
         accelerator="auto",
-        enable_progress_bar=False,
+        enable_progress_bar=True,
         logger=False,
         enable_checkpointing=False,
     )
@@ -242,18 +242,15 @@ if __name__ == "__main__":
 
     # creates an Optuna study;
     # direction="minimize" means lower returned values are better
-    # storage + load_if_exists: Suche kann nach Abbruch fortgesetzt werden
     study = optuna.create_study(
         direction="minimize",
         study_name="lenet5_cifar10",
-        storage="sqlite:///../optuna_lenet5.db",
-        load_if_exists=True,
         sampler=optuna.samplers.TPESampler(seed=42),
     )
 
     # passes the objective function itself (not its result)
     # Optuna calls it once per trial, each time with a new trial object
-    study.optimize(objective, n_trials=5)
+    study.optimize(objective, n_trials=20)
 
     print("-------------------------")
     print("Beste Hyperparameter:", study.best_params)
@@ -270,7 +267,7 @@ if __name__ == "__main__":
     # retrains from scratch with the best hyperparameters found,
     # this time over more epochs and with validation enabled
     final_trainer = pl.Trainer(
-        max_epochs=45,
+        max_epochs=50,
         accelerator="auto",
         logger=False,
         enable_checkpointing=False,
