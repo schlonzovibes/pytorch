@@ -194,8 +194,10 @@ def save_best_model(
     # the old file is deleted and replaced by the new one.
     os.makedirs(checkpoint_dir, exist_ok=True)
 
-    # robust parsing: tolerates any prefix and optional +/- signs
+    # regex: tolerates any prefix and optional +/- signs
     pattern = re.compile(
+        # r = raw string - interpret \ as string
+        # f = f-string: allows placeholders {} for using variables
         rf"{re.escape(prefix)}_train(?P<train>[+-]?[0-9]+(?:\.[0-9]+)?)"
         rf"_val(?P<val>[+-]?[0-9]+(?:\.[0-9]+)?)\.pth$"
     )
@@ -209,16 +211,14 @@ def save_best_model(
             continue
         filepath = os.path.join(checkpoint_dir, filename)
         existing_val_loss = float(match.group("val"))
-        if (
-            best_existing_val_loss is None
-            or existing_val_loss < best_existing_val_loss
-        ):
+        if best_existing_val_loss is None or existing_val_loss < best_existing_val_loss:
             best_existing_val_loss = existing_val_loss
             best_existing_file = filepath
 
     # skip saving if the new result isn't better than what's already on disk
     if best_existing_val_loss is not None and val_loss >= best_existing_val_loss:
         print(
+            # %.4f = four decimal places
             f"New val_loss ({val_loss:.4f}) is not better than existing best "
             f"({best_existing_val_loss:.4f}). Not saving."
         )
@@ -257,7 +257,7 @@ if __name__ == "__main__":
     print("Bester Loss:", study.best_value)
 
     # Finales Modell mit den besten gefundenen Werten trainieren
-    best_model = LeNet5Lightning(
+    model = LeNet5Lightning(
         # study.best_params: dictionary of the hyperparameters
         # from the trial with the lowest loss
         lr=study.best_params["lr"],
@@ -273,13 +273,13 @@ if __name__ == "__main__":
         enable_checkpointing=False,
         enable_progress_bar=True,
     )
-    final_trainer.fit(best_model, trainloader, valloader)
+    final_trainer.fit(model, trainloader, valloader)
 
     # das Modell gegen das echte Test-Set bewerten (kein Val-Leak!)
-    test_results = final_trainer.test(best_model, testloader)[0]
+    test_results = final_trainer.test(model, testloader)[0]
     print(
         f"Test-Loss: {test_results['test_loss']:.4f} | "
         f"Test-Accuracy: {test_results['test_acc']:.4f}"
     )
 
-    save_best_model(best_model, best_model.last_train_loss, best_model.last_val_loss)
+    save_best_model(model, model.last_train_loss, model.last_val_loss)
