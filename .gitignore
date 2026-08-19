@@ -1,11 +1,11 @@
-# Nur notebooks/ und scripts/ versionieren
+# Nur notebooks/*.py versionieren
 /*
 !.gitignore
 !notebooks/
-!scripts/
 
-# In notebooks nur die Root-Dateien, keine Unterordner
+# In notebooks nur Root-Python-Dateien, keine Unterordner
 notebooks/*/
 
-# Python-Bytecode-Cache
+# Python-Bytecode-Cache und Sonstiges
 __pycache__/
+*.db
